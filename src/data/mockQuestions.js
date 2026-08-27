@@ -1,0 +1,172 @@
+// Adaptive clinical question database with branching logic and red-flag rules
+
+export const INITIAL_QUESTIONS = [
+  {
+    id: "chief_complaint",
+    step: 1,
+    totalSteps: 7,
+    category: "Chief Complaint",
+    question: "What is your main health concern or reason for visiting today?",
+    hindiQuestion: "आज अस्पताल आने का आपका मुख्य कारण या स्वास्थ्य समस्या क्या है?",
+    audioPrompt: "What is your main health concern today?",
+    type: "choice_and_voice",
+    quickOptions: [
+      { text: "Chest discomfort / pain", value: "chest_pain", isRedFlagCandidate: true },
+      { text: "Stomach / Abdominal pain", value: "abdominal_pain" },
+      { text: "Fever & body aches", value: "fever" },
+      { text: "Cough & breathing trouble", value: "cough_dyspnea", isRedFlagCandidate: true },
+      { text: "Severe Headache / Dizziness", value: "headache" },
+      { text: "Routine check-up / Follow-up", value: "follow_up" },
+    ],
+    hint: "You can tap a common option or speak using the microphone.",
+  },
+];
+
+export const ADAPTIVE_BRANCHES = {
+  chest_pain: [
+    {
+      id: "onset_duration",
+      step: 2,
+      category: "Onset & Duration",
+      question: "When did this chest discomfort begin, and is it continuous?",
+      hindiQuestion: "यह सीने में भारीपन या दर्द कब शुरू हुआ, और क्या यह लगातार बना हुआ है?",
+      audioPrompt: "When did this chest discomfort begin?",
+      quickOptions: [
+        { text: "Started 2 days ago (Intermittent)", value: "2 days ago, comes and goes" },
+        { text: "Started this morning (Sudden onset)", value: "Sudden onset this morning" },
+        { text: "Ongoing for over 2 weeks", value: "Chronic, >2 weeks" },
+        { text: "Just started a few hours ago", value: "Acute <4 hours" },
+      ],
+    },
+    {
+      id: "location_radiation",
+      step: 3,
+      category: "Pain Character & Radiation",
+      question: "Where exactly is the discomfort, and does it spread to your arm, neck, or back?",
+      hindiQuestion: "दर्द वास्तव में कहाँ है, और क्या यह आपके बाएं हाथ, गर्दन या पीठ में फैल रहा है?",
+      audioPrompt: "Where is the pain and does it spread to your arm or neck?",
+      quickOptions: [
+        { text: "Center of chest, radiates to left arm", value: "Retrosternal radiating to left shoulder/arm", isRedFlag: true },
+        { text: "Upper stomach / burning sensation", value: "Epigastric burning sensation" },
+        { text: "Sharp pain on right side when breathing", value: "Pleuritic sharp pain right side" },
+        { text: "Heaviness without radiation", value: "Substernal heaviness without radiation" },
+      ],
+    },
+    {
+      id: "aggravating_relieving",
+      step: 4,
+      category: "Aggravating Factors",
+      question: "Does the discomfort worsen with physical exertion (like walking or climbing stairs)?",
+      hindiQuestion: "क्या चलने या सीढ़ियां चढ़ने पर दर्द बढ़ जाता है?",
+      audioPrompt: "Does the discomfort increase when you walk or exert yourself?",
+      quickOptions: [
+        { text: "Yes, worsens on walking / exertion", value: "Exertional worsening, relieved with rest", isRedFlagCandidate: true },
+        { text: "No, worsens after meals", value: "Post-prandial worsening" },
+        { text: "Worsens on taking deep breaths", value: "Positional/inspiratory worsening" },
+        { text: "No relation to activity", value: "Unrelated to exertion" },
+      ],
+    },
+    {
+      id: "associated_symptoms",
+      step: 5,
+      category: "Associated Symptoms",
+      question: "Are you experiencing any shortness of breath, sweating, or nausea?",
+      hindiQuestion: "क्या आपको सांस लेने में तकलीफ, पसीना आना या घबराहट महसूस हो रही है?",
+      audioPrompt: "Are you experiencing shortness of breath or cold sweating?",
+      quickOptions: [
+        { text: "Mild breathlessness on walking", value: "Mild exertional dyspnea, no diaphoresis" },
+        { text: "Severe sweating & nausea", value: "Cold sweating with nausea", isRedFlag: true },
+        { text: "Acid reflux / sour burps", value: "Acid regurgitation" },
+        { text: "None of these", value: "No associated dyspnea, sweating or nausea" },
+      ],
+    },
+    {
+      id: "past_medical_history",
+      step: 6,
+      category: "Past History & Risk Factors",
+      question: "Do you have a known history of high blood pressure, diabetes, or heart disease?",
+      hindiQuestion: "क्या आपको पहले से उच्च रक्तचाप, मधुमेह या हृदय रोग की समस्या है?",
+      audioPrompt: "Do you have high blood pressure, diabetes, or previous heart condition?",
+      quickOptions: [
+        { text: "Hypertension (Takes Telmisartan)", value: "Known hypertensive on regular medication" },
+        { text: "Diabetes & High Blood Pressure", value: "Known Diabetic & Hypertensive" },
+        { text: "Family history of early heart disease", value: "Positive family history of IHD" },
+        { text: "No prior medical conditions", value: "No known comorbidities" },
+      ],
+    },
+    {
+      id: "medications_allergies",
+      step: 7,
+      category: "Current Medicines & Allergies",
+      question: "What medicines are you currently taking, and do you have any known drug allergies?",
+      hindiQuestion: "आप वर्तमान में कौन सी दवाएं ले रहे हैं, और क्या आपको किसी दवा से एलर्जी है?",
+      audioPrompt: "What medicines do you take, and do you have any allergies?",
+      quickOptions: [
+        { text: "Telmisartan 40mg + Allergy to Penicillin", value: "Telmisartan 40mg daily. Known Allergy: Penicillin" },
+        { text: "Metformin 500mg + No known allergies", value: "Metformin 500mg BD. No known drug allergies" },
+        { text: "No regular medicines / No allergies", value: "No regular medications. Nil known allergies" },
+        { text: "Allergy to Sulfa drugs", value: "Known allergy to Sulphonamides" },
+      ],
+    },
+  ],
+  abdominal_pain: [
+    {
+      id: "abd_location",
+      step: 2,
+      category: "Pain Location",
+      question: "Where in your abdomen is the pain located?",
+      hindiQuestion: "पेट के किस हिस्से में दर्द हो रहा है?",
+      quickOptions: [
+        { text: "Upper abdomen (after eating)", value: "Epigastric region post-prandial" },
+        { text: "Lower right abdomen (sharp)", value: "Right lower quadrant, sharp", isRedFlagCandidate: true },
+        { text: "Around navel area", value: "Periumbilical cramping" },
+        { text: "All over the stomach", value: "Diffuse abdominal discomfort" },
+      ],
+    },
+    {
+      id: "abd_symptoms",
+      step: 3,
+      category: "Associated GI Symptoms",
+      question: "Do you have vomiting, loose stools, or fever with this pain?",
+      hindiQuestion: "क्या आपको उल्टी, दस्त या बुखार भी है?",
+      quickOptions: [
+        { text: "Nausea and acidity", value: "Nausea and burning sensation" },
+        { text: "Frequent watery stools (>4 times)", value: "Watery diarrhea >4 episodes" },
+        { text: "Vomiting and unable to keep food down", value: "Intractable vomiting", isRedFlagCandidate: true },
+        { text: "None of the above", value: "No vomiting, fever or altered bowel habits" },
+      ],
+    },
+  ],
+  fever: [
+    {
+      id: "fever_duration",
+      step: 2,
+      category: "Fever Details",
+      question: "How high is the fever, and how many days has it been present?",
+      hindiQuestion: "बुखार कितने दिनों से है और क्या यह बहुत तेज है?",
+      quickOptions: [
+        { text: "3 days with chills & body ache", value: "3 days, high grade with chills" },
+        { text: "Mild fever with sore throat (2 days)", value: "Low grade fever with sore throat 2 days" },
+        { text: "High fever >102°F with severe headache", value: "High grade >102 F with retro-orbital headache", isRedFlagCandidate: true },
+        { text: "Intermittent evening fever", value: "Evening rise of temperature" },
+      ],
+    },
+  ],
+};
+
+export const RED_FLAG_TRIGGERS = [
+  "chest pain",
+  "chest discomfort",
+  "radiat",
+  "left arm",
+  "shortness of breath",
+  "difficulty breathing",
+  "cold sweating",
+  "loss of consciousness",
+  "fainted",
+  "severe bleeding",
+  "sudden weakness",
+  "slurred speech",
+  "intractable vomiting",
+  "unresponsive",
+];

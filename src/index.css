@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --kiosk-font-scale: 1;
+  }
+  
+  html {
+    font-size: calc(16px * var(--kiosk-font-scale));
+  }
+
+  body {
+    background-color: #F8FAFC;
+    color: #0F172A;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* High Contrast Accessibility Mode */
+  body.high-contrast {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+  }
+
+  body.high-contrast .kiosk-card {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border-color: #FACC15 !important;
+    border-width: 2px !important;
+  }
+
+  body.high-contrast button {
+    border-width: 2px !important;
+    border-color: #FFFFFF !important;
+  }
+}
+
+@layer components {
+  /* Clean hospital card */
+  .kiosk-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+  }
+
+  .kiosk-card-interactive {
+    background-color: #FFFFFF;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+    transition: all 0.15s ease-in-out;
+  }
+
+  .kiosk-card-interactive:hover {
+    border-color: #0284C7;
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08);
+  }
+
+  .kiosk-card-interactive:active {
+    transform: scale(0.99);
+  }
+
+  /* Clean Kiosk Action Buttons */
+  .btn-kiosk-primary {
+    background-color: #0284C7;
+    color: #FFFFFF;
+    font-weight: 600;
+    border-radius: 12px;
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
+  }
+  .btn-kiosk-primary:hover {
+    background-color: #0369A1;
+  }
+  .btn-kiosk-primary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-kiosk-secondary {
+    background-color: #FFFFFF;
+    color: #0F172A;
+    border: 1.5px solid #CBD5E1;
+    font-weight: 600;
+    border-radius: 12px;
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .btn-kiosk-secondary:hover {
+    background-color: #F8FAFC;
+    border-color: #94A3B8;
+  }
+}
+
+@layer utilities {
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F1F5F9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
+}
